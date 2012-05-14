@@ -1,0 +1,116 @@
+#!/bin/bash
+
+##
+# Minecraft Server Administration tool, for the shared Gaming Stack Exchange (tm)
+# Game ON! server. 
+# 
+# Copyright 2012, Marco Ceppi <marco@ceppi.net>, All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+
+help()
+{
+	cat << EOF
+usage: $0 options
+
+This script run the test1 or test2 over a machine.
+
+OPTIONS:
+   -h      Show this message
+   -n      Server name
+   -r      Server address
+   -p      Server root password
+   -v      Verbose
+EOF
+}
+
+ERROR=-2
+WARNING=-1
+INFO=0
+DEBUG=1
+
+debug()
+{
+	print "DEBUG: $1" $DEBUG
+}
+
+warn()
+{
+	print "WARNING: $1" $WARNING
+}
+
+info()
+{
+	print "INFO: $1"
+}
+
+error()
+{
+	print "ERROR: $1" $ERROR
+}
+
+print()
+{
+	local LEVEL=${2:-0}
+	
+	if [ ! -z "$LEVEL" ]; then
+		LEVEL=0
+	fi
+	
+	if [ $LEVEL -le $VERBOSE ]; then
+		echo "$1"
+	fi
+}
+
+prompt()
+{
+	local QUESTION="$1"
+	
+	echo -n "$QUESTION "
+
+VERBOSE=0
+MINECRAFT=
+JAR=
+MAP=
+
+while getopts “hvd:j:m:” OPTION; do
+	case $OPTION in
+		h)
+			debug "Displaying Help because flag was provided"
+			help
+			exit 0
+		;;
+		v)
+			VERBOSE=1
+		;;
+		d)
+			MINECRAFT=$OPTARG
+		;;
+		j)
+			JAR=$OPTARG
+		;;
+		m)
+			MAP=$OPTARG
+		;;
+	esac
+done
+
+if [ -z "$MINECRAFT" ]; then
+	print "DEBUG: We're asking the user where the minecraft folder is." $DEBUG
+	prompt "Where is the minecraft directory (relative to your home folder)?"
+
+fi
+
